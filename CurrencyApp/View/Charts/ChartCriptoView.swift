@@ -90,7 +90,7 @@ struct ChartCriptoView: View {
                                 x: .value("Time", Date(timeIntervalSince1970: chart.time / 1000)),
                                 y: .value("Price", chart.Open)
                             )
-                            .foregroundStyle(.purple)
+                            .foregroundStyle(lineChartCripto)
                             .lineStyle(StrokeStyle(lineWidth: 3))
                             
                         }
@@ -109,21 +109,21 @@ struct ChartCriptoView: View {
                     .chartXAxis {
                         AxisMarks() { value in
                             AxisGridLine()
-                                .foregroundStyle(Color.gray)
+                                .foregroundStyle(textColor)
                             AxisTick()
-                                .foregroundStyle(Color.gray)
+                                .foregroundStyle(textColor)
                             AxisValueLabel()
-                                .foregroundStyle(Color.gray)
+                                .foregroundStyle(textColor)
                         }
                     }
                     .chartYAxis {
                         AxisMarks { value in
                             AxisGridLine()
-                                .foregroundStyle(Color.gray)
+                                .foregroundStyle(textColor)
                             AxisTick()
-                                .foregroundStyle(Color.gray)
+                                .foregroundStyle(textColor)
                             AxisValueLabel()
-                                .foregroundStyle(Color.gray)
+                                .foregroundStyle(textColor)
                         }
                     }               
                 

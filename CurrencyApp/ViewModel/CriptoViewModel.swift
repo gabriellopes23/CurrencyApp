@@ -5,9 +5,8 @@ class CriptoViewModel: ObservableObject {
     @Published var currecyModels: [CriptoModel] = []
     private var refrashTimer: Timer?
     
-
     func getCurrencies() {
-        let apiKey = "CG-VahoKn9ehE5HCSdp4B6xEy3A"
+        let apiKey = ""
         let urlString = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd"
         
         guard let url = URL(string: urlString) else {
@@ -46,7 +45,7 @@ class CriptoViewModel: ObservableObject {
     }
     
     
-    func startAutoRefrash() {
+    func startAutoRefrashCripto() {
         getCurrencies()
         refrashTimer?.invalidate()
         Timer.scheduledTimer(withTimeInterval: 60.0, repeats: true) { _ in

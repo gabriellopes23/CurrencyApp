@@ -25,21 +25,21 @@ struct ChartCoinView: View {
             .chartXAxis {
                 AxisMarks() { value in
                     AxisGridLine()
-                        .foregroundStyle(Color.gray)
+                        .foregroundStyle(textColor)
                     AxisTick()
-                        .foregroundStyle(Color.gray)
+                        .foregroundStyle(textColor)
                     AxisValueLabel()
-                        .foregroundStyle(Color.gray)
+                        .foregroundStyle(textColor)
                 }
             }
             .chartYAxis {
                 AxisMarks() { value in
                     AxisGridLine()
-                        .foregroundStyle(Color.gray)
+                        .foregroundStyle(textColor)
                     AxisTick()
-                        .foregroundStyle(Color.gray)
+                        .foregroundStyle(textColor)
                     AxisValueLabel()
-                        .foregroundStyle(Color.gray)
+                        .foregroundStyle(textColor)
                 }
             }
             .overlay(

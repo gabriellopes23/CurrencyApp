@@ -1,13 +1,17 @@
 import SwiftUI
 
 struct MainAppView: View {
-    @State private var isFirstLaunch = UserDefaults.standard.isFirstLaunch
+    @State private var isFirstLaunch = UserSettings.shared.isFirstLaunch
+    let settingsManager = SettingsManager()
 
     var body: some View {
         if isFirstLaunch {
-            WelcomeView()
+            WelcomeView(settingsManager: settingsManager)
+                .onDisappear {
+                    UserSettings.shared.isFirstLaunch = false
+                }
         } else {
-            TabMainView(name: .constant(UserDefaults.standard.name), nickname: .constant(UserDefaults.standard.nickname), selectedImage: .constant(UserDefaults.standard.selectedImage), customImage: .constant(UserDefaults.standard.customImageData.flatMap { UIImage(data: $0) }), showPhotoPicker: .constant(false))
+            TabMainView(settingsManager: settingsManager)
         }
     }
 }

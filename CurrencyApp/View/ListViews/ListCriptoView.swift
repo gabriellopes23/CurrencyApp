@@ -52,7 +52,7 @@ struct ListCriptoView: View {
                                 })
                             }
                             .padding()
-                            .background(RoundedRectangle(cornerRadius: 20).fill(rowList))
+                            .background(RoundedRectangle(cornerRadius: 20).fill(rowList).opacity(0.7))
                         }
                     }
                     .onAppear {

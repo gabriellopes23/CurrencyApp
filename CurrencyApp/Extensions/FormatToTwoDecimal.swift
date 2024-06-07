@@ -1,8 +1,9 @@
-//
-//  FormatToTwoDecimal.swift
-//  CurrencyApp
-//
-//  Created by Gabriel Lopes on 04/06/24.
-//
 
 import Foundation
+
+func formatToTwoDecimalPlaces(_ numberString: String) -> String {
+    guard let number = Double(numberString) else {
+        return numberString
+    }
+    return String(format: "%.2f", number)
+}

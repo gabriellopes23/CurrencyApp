@@ -18,7 +18,7 @@ class CriptoChartViewModel: ObservableObject {
     }
     
     func getOHLC(idName: String, days: Int) {
-        let apiKey = "CG-VahoKn9ehE5HCSdp4B6xEy3A"
+        let apiKey = ""
         let urlString = "https://api.coingecko.com/api/v3/coins/\(idName)/ohlc?vs_currency=usd&days=\(days)"
         
         guard let url = URL(string: urlString) else {

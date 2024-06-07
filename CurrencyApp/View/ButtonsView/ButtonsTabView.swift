@@ -61,7 +61,7 @@ struct ImageMenuView: View {
                     .imageScale(.large)
             }
             .padding(10)
-            .foregroundStyle(.white)
+            .foregroundStyle(textColor)
             .font(.headline)
             .background(
             RoundedRectangle(cornerRadius: 10)
@@ -73,7 +73,7 @@ struct ImageMenuView: View {
                     .font(.caption)
             }
             .padding(9)
-            .foregroundStyle(.gray)
+            .foregroundStyle(textColor)
             .background(
             RoundedRectangle(cornerRadius: 10)
                 .fill(rowList).opacity(isSelected ? 1.0 : 0.0))

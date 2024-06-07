@@ -1,8 +1,11 @@
-//
-//  Color Constants.swift
-//  CurrencyApp
-//
-//  Created by Gabriel Lopes on 29/05/24.
-//
 
-import Foundation
+import SwiftUI
+
+let bgColor = Color("bgColor")
+let rowList = Color("rowList")
+let infoCurrency = Color("infoCurrency")
+let bgbuttonsTabview = Color("bgbuttonsTabview")
+let bgForm = Color("bgForm")
+let bgWelcome = Color("bgWelcome")
+let textColor = Color("textColor")
+let lineChartCripto = Color("lineChartCripto")

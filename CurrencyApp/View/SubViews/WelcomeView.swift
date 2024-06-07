@@ -1,112 +1,211 @@
+
 import SwiftUI
 
 struct WelcomeView: View {
-    @State var name = UserDefaults.standard.name
-    @State var nickname = UserDefaults.standard.nickname
-    @State var selectedImage = UserDefaults.standard.selectedImage
-    @State private var isValidName = false
-    @State private var isNicknameValid = false
-    @State private var isFormSubmitted = false
+    @ObservedObject var settingsManager: SettingsManager
 
-    @State var showPhotoPicker: Bool = false
-    @State var customImage: UIImage? = UserDefaults.standard.customImageData.flatMap { UIImage(data: $0) }
+    @State private var isValidName = true
+    @State private var isNicknameValid = true
+    @State private var isFormSubmitted = false
+    @State private var showFormSubmitted = false
+    @State private var showText = false
+    @State private var shakeAnimation = false
+    @State private var showPhotoPicker = false
 
     let images = ["image01", "image02", "image03", "image04", "image05", "image06"]
 
     var body: some View {
         ZStack {
+        
             bgColor.ignoresSafeArea()
 
             VStack(spacing: 20) {
-                Text("Choose a profile picture")
+                Spacer()
+
+                if showText {
+                    VStack {
+                        Text("HI!")
+                            .font(.largeTitle)
+                        Text("Welcome Currency App")
+                    }
                     .foregroundColor(.white)
-                    .font(.headline)
+                    .font(.title2)
+                    .fontWeight(.bold)
                     .padding(.top)
-
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack {
-                        Button(action: {
-                            showPhotoPicker = true
-                        }, label: {
-                            if let customImage = customImage {
-                                Image(uiImage: customImage)
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 60, height: 60)
-                                    .background(Color.white.opacity(0.5))
-                                    .clipShape(Circle())
-                                    .overlay(Circle().stroke(Color.blue, lineWidth: 2))
-                            } else {
-                                Image(systemName: "photo")
-                                    .imageScale(.large)
-                                    .frame(width: 60, height: 60)
-                                    .background(Color.white.opacity(0.5))
-                                    .clipShape(Circle())
-                                    .overlay(Circle().stroke(customImage != nil ? Color.blue : Color.clear, lineWidth: 2))
-                            }
-                        })
-
-                        ForEach(images, id: \.self) { image in
-                            Image(image)
-                                .resizable()
-                                .scaledToFit()
-                                .clipShape(Circle())
-                                .frame(width: 60, height: 60)
-                                .overlay(Circle().stroke(selectedImage == image ? Color.blue : Color.clear, lineWidth: 2))
-                                .onTapGesture {
-                                    selectedImage = image
-                                    customImage = nil
-                                }
-                        }
-                    }
+                    .transition(.move(edge: .leading).combined(with: .opacity))
                 }
-                .padding(.horizontal, 35)
 
-                TextField("Name", text: $name)
-                    .padding()
-                    .background(Color.white.opacity(0.5))
-                    .cornerRadius(8)
-                    .padding(.horizontal)
-                    .onChange(of: name) {
-                        isValidName = !name.isEmpty
-                    }
+                Spacer()
 
-                TextField("Nickname", text: $nickname)
-                    .padding()
-                    .background(Color.white.opacity(0.5))
-                    .cornerRadius(8)
-                    .padding(.horizontal)
-                    .onChange(of: nickname) {
-                        isNicknameValid = !nickname.isEmpty
-                    }
+                // Formulário de informações do usuário
+                if showFormSubmitted {
+                    VStack(spacing: 15) {
+                        Text("Fill in the information")
+                            .foregroundColor(.white)
+                            .fontWeight(.bold)
 
-                Button(action: {
-                    if isValidName && isNicknameValid {
-                        UserDefaults.standard.name = name
-                        UserDefaults.standard.nickname = nickname
-                        UserDefaults.standard.selectedImage = selectedImage
-                        if let customImage = customImage {
-                            UserDefaults.standard.customImageData = customImage.jpegData(compressionQuality: 1.0)
-                        } else {
-                            UserDefaults.standard.customImageData = nil
+                        // Seleção de imagem
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack {
+                                Button(action: {
+                                    showPhotoPicker = true
+                                }) {
+                                    if let customImage = settingsManager.customImage {
+                                        Image(uiImage: customImage)
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: 60, height: 60)
+                                            .background(Color.white.opacity(0.5))
+                                            .clipShape(Circle())
+                                            .overlay(Circle().stroke(Color.blue, lineWidth: 2))
+                                    } else {
+                                        Image(systemName: "photo")
+                                            .imageScale(.large)
+                                            .frame(width: 60, height: 60)
+                                            .background(Color.white.opacity(0.5))
+                                            .clipShape(Circle())
+                                            .overlay(Circle().stroke(Color.clear, lineWidth: 2))
+                                    }
+                                }
+
+                                ForEach(images, id: \.self) { image in
+                                    Image(image)
+                                        .resizable()
+                                        .scaledToFit()
+                                        .clipShape(Circle())
+                                        .frame(width: 60, height: 60)
+                                        .overlay(Circle().stroke(settingsManager.selectedImage == image ? Color.blue : Color.clear, lineWidth: 2))
+                                        .onTapGesture {
+                                            settingsManager.selectedImage = image
+                                            settingsManager.customImage = nil
+                                        }
+                                }
+                            }
                         }
-                        UserDefaults.standard.isFirstLaunch = false
-                        isFormSubmitted = true
+                        .padding(.horizontal, 35)
+
+                        // Entrada de nome
+                        TextField("Name", text: $settingsManager.name)
+                            .padding()
+                            .foregroundColor(.white)
+                            .background(Color.white.opacity(0.5))
+                            .cornerRadius(8)
+                            .padding(.horizontal)
+                            .onChange(of: settingsManager.name) {
+                                isValidName = !settingsManager.name.isEmpty
+                            }
+                            .overlay(
+                                HStack {
+                                    Spacer()
+                                    if !isValidName {
+                                        Image(systemName: "questionmark.circle")
+                                            .foregroundColor(.red)
+                                    }
+                                }
+                                .padding(.horizontal, 20)
+                            )
+                            .modifier(ShakeEffect(animatableData: CGFloat(shakeAnimation ? 1 : 0)))
+
+                        // Entrada de apelido
+                        TextField("Nickname", text: $settingsManager.nickname)
+                            .padding()
+                            .foregroundColor(.white)
+                            .background(Color.white.opacity(0.5))
+                            .cornerRadius(8)
+                            .padding(.horizontal)
+                            .onChange(of: settingsManager.nickname) {
+                                isNicknameValid = !settingsManager.nickname.isEmpty
+                            }
+                            .overlay(
+                                HStack {
+                                    Spacer()
+                                    if !isNicknameValid {
+                                        Image(systemName: "questionmark.circle")
+                                            .foregroundColor(.red)
+                                    }
+                                }
+                                .padding(.horizontal, 20)
+                            )
+                            .modifier(ShakeEffect(animatableData: CGFloat(shakeAnimation ? 1 : 0)))
+
+                        // Botão de envio
+                        Button(action: {
+                            // Lógica de validação
+                            if settingsManager.name.isEmpty {
+                                isValidName = false
+                                withAnimation {
+                                    shakeAnimation = true
+                                }
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                    shakeAnimation = false
+                                }
+                            }
+
+                            if settingsManager.nickname.isEmpty {
+                                isNicknameValid = false
+                                withAnimation {
+                                    shakeAnimation = true
+                                }
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                    shakeAnimation = false
+                                }
+                            }
+
+                            if isValidName && isNicknameValid {
+                                // Salvar as configurações
+                                settingsManager.saveSettings()
+                                UserSettings.shared.isFirstLaunch = false
+                                // Atualizar o estado para mostrar a tela principal
+                                isFormSubmitted = true
+                            }
+                        }) {
+                            Text("Continue")
+                                .padding()
+                                .background(RoundedRectangle(cornerRadius: 10).fill(Color.purple))
+                                .foregroundColor(.white)
+                        }
                     }
-                }, label: {
-                    Text("Continuar")
-                })
+                    .padding()
+                    .background(
+                        RoundedRectangle(cornerRadius: 15).fill(Color.black.opacity(0.7))
+                    )
+                    .padding(5)
+                    .transition(.move(edge: .trailing).combined(with: .opacity))
+                }
+
+                Spacer()
             }
-            .fullScreenCover(isPresented: $isFormSubmitted) {
-                TabMainView(name: $name, nickname: $nickname, selectedImage: $selectedImage, customImage: $customImage, showPhotoPicker: $showPhotoPicker)
+        }
+        .onAppear {
+            withAnimation {
+                showText = true
             }
-            .sheet(isPresented: $showPhotoPicker) {
-                PhotoPicker(customImage: $customImage, showPicker: $showPhotoPicker)
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                withAnimation {
+                    showFormSubmitted = true
+                }
             }
+        }
+        .fullScreenCover(isPresented: $isFormSubmitted) {
+            TabMainView(settingsManager: settingsManager)
+        }
+        .sheet(isPresented: $showPhotoPicker) {
+            PhotoPicker(customImage: $settingsManager.customImage, showPicker: $showPhotoPicker)
         }
     }
 }
 
+struct ShakeEffect: GeometryEffect {
+    var amount: CGFloat = 10
+    var shakesPerUnit = 3
+    var animatableData: CGFloat 
+    
+    func effectValue(size: CGSize) -> ProjectionTransform {
+        ProjectionTransform(CGAffineTransform(translationX: amount * sin(animatableData * .pi * CGFloat(shakesPerUnit)), y: 0))
+    }
+}
+
 #Preview {
-    WelcomeView()
+    WelcomeView(settingsManager: SettingsManager())
 }

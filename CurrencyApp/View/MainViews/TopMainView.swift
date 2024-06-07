@@ -1,46 +1,37 @@
-
 import SwiftUI
 
 struct TopMainView: View {
-    @Binding var name: String
-    @Binding var nickname: String
-    @Binding var selectedImage: String
-    @Binding var customImage: UIImage?
-    @Binding var showPhotoPicker: Bool
-    
+    @ObservedObject var settingsManager: SettingsManager
+
     var body: some View {
         HStack(spacing: 5) {
-            if let customImage = customImage {
+            if let customImage = settingsManager.customImage {
                 Image(uiImage: customImage)
                     .resizable()
                     .scaledToFit()
                     .clipShape(Circle())
                     .frame(width: 100, height: 100)
             } else {
-                Image(selectedImage)
+                Image(settingsManager.selectedImage)
                     .resizable()
                     .scaledToFit()
                     .clipShape(Circle())
                     .frame(width: 100, height: 100)
             }
-            
+
             VStack(alignment: .leading) {
-                Text(name)
+                Text(settingsManager.name)
                     .font(.title2)
                     .fontWeight(.bold)
-                    .foregroundStyle(.white)
-                
-                Text(nickname)
-                    .foregroundStyle(.white)
+                    .foregroundColor(.white)
+
+                Text(settingsManager.nickname)
+                    .foregroundColor(.white)
             }
-            
+
             Spacer()
-            
-            ConfigView(name: $name, nickname: $nickname, selectedImage: $selectedImage, showPhotoPicker: $showPhotoPicker, customImage: $customImage)
+
+            ConfigView(settingsManager: settingsManager)
         }
     }
-}
-
-#Preview {
-    TopMainView(name: .constant("Gabriel"), nickname: .constant("Biel"), selectedImage: .constant("image01"), customImage: .constant(UIImage()), showPhotoPicker: .constant(false))
 }
